@@ -1,0 +1,290 @@
+//////dijkstra algorithm//////
+#include<stdio.h>
+#include<limits.h>
+#include<stdbool.h>
+#define V 9
+//first lets make a mindist to get vertex with min distance
+int mindist(int dist[],bool set[]){
+    int min=INT_MAX,min_index;
+    for(int v=0;v<V;v++){
+        if(dist[v]<=min && set[v]==false){
+            min=dist[v];
+            min_index=v;
+        }
+    }
+    return min_index;
+}
+//for prinintng solution
+void printsolution(int dist[]){
+    printf("vertex distance from source\n ");
+    for(int i=0;i<V;i++){
+        printf("%d\t\t\t%d\n",i,dist[i]);
+    }
+}
+//actual dijkstra algorithm
+void dijkstra(int graph[V][V],int src){
+    int dist[V];
+    bool set[V];
+    for(int i=0;i<V;i++){
+        dist[i]=INT_MAX;
+        set[i]=false;
+    }
+    dist[src]=0;
+    for (int count=0;count<V-1;count++){
+        int u=mindist(dist,set);
+        set[u]=true;
+        for(int v=0;v<V;v++){
+            if(!set[v]&&graph[u][v]&&dist[u]!=INT_MAX&&dist[u]+graph[u][v]<dist[v]){
+                dist[v]=dist[u]+graph[u][v];
+            }
+        }
+    }
+    printsolution(dist);
+}
+int main(){
+    int graph[V][V] = { { 0, 4, 0, 0, 0, 0, 0, 8, 0 },
+                        { 4, 0, 8, 0, 0, 0, 0, 11, 0 },
+                        { 0, 8, 0, 7, 0, 4, 0, 0, 2 },
+                        { 0, 0, 7, 0, 9, 14, 0, 0, 0 },
+                        { 0, 0, 0, 9, 0, 10, 0, 0, 0 },
+                        { 0, 0, 4, 14, 10, 0, 2, 0, 0 },
+                        { 0, 0, 0, 0, 0, 2, 0, 1, 6 },
+                        { 8, 11, 0, 0, 0, 0, 1, 0, 7 },
+                        { 0, 0, 2, 0, 0, 0, 6, 7, 0 } };
+ 
+    // Function call
+    dijkstra(graph, 0);
+    return 0;
+}
+
+/////////leaky bucket///
+#include<stdio.h>
+int main(){
+    int n,i,j,k,p,r,q=1,sum=0;
+    printf("enter the maximum bucket length\n");
+    scanf("%d",&n);
+    printf("enter the output transmission rate\n");
+    scanf("%d",&r);
+    while(q){
+        printf("enter the input rate\n");
+        scanf("%d",&p);
+        if(p>r){
+            printf("packets transmitted are : %d\n",r);
+            if(sum+p-r>n){
+                printf("packets are lost %d\n",sum+p-r-n);
+            }
+            else{
+                printf("packets loss is 0\n");
+                sum=sum+p-r;
+            }
+            printf("the bucket status is : %d\n",sum);
+        }
+        else if(p==n){
+            printf("packets transmitted is %d\n",r);
+            printf("the packets loss is 0\n");
+            printf("the bucket status is %d\n",sum);
+        }
+        else{
+            k=p+sum;
+            if(k<r && k>0){
+                printf("the packets transmitted is %d\n",k);
+                sum=0;
+            }
+            else{
+                printf("the packets transmitted is %d\n",r);
+                sum=sum+p-r;
+            }
+            printf("the bucket status is %d\n",sum);
+        }
+        printf("continue ? : ");
+        scanf("%d",&q);
+        if(q==0){
+            break;
+        }
+        printf("\n");
+    }
+    return 0;
+}
+//////dvr/////////
+#include<stdio.h>
+int dist[50][50],temp[50][50],n,i,j,k,x;
+void dvr();
+int main()
+{
+    printf("\nEnter the number of nodes : ");
+    scanf("%d",&n);
+    printf("\nEnter the distance matrix :\n");
+    for(i=0;i<n;i++)
+    {
+        for(j=0;j<n;j++)
+        {   
+            scanf("%d",&dist[i][j]);
+            dist[i][i]=0;
+            temp[i][j]=j;
+        }
+        printf("\n");
+	}
+     dvr(); 
+     printf("enter value of i &j:");
+     scanf("%d",&i);
+	 scanf("%d",&j);   
+	 printf("enter the new cost");
+	 scanf("%d",&x);   
+	 dist[i][j]=x;
+	 printf("After update\n\n");	 	  
+     dvr();
+	 return 0; 
+}
+void dvr()
+{
+	for (i = 0; i < n; i++)
+            for (j = 0; j < n; j++)
+            	for (k = 0; k < n; k++)
+                	if (dist[i][k] + dist[k][j] < dist[i][j])
+                	{
+                    	dist[i][j] = dist[i][k] + dist[k][j];
+                    	temp[i][j] = k;
+               		}
+               		
+	for(i=0;i<n;i++)
+        {
+            printf("\n\nState value for router %d is \n",i+1);
+            for(j=0;j<n;j++)
+                printf("\t\nnode %d via %d Distance%d",j+1,temp[i][j]+1,dist[i][j]);
+        }   
+    printf("\n\n");
+
+}
+//////////char stuffing//////
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+//reversing function
+void rev(char str[50]){
+    char temp;
+    int i,n=strlen(str);
+    for(i=0;i<n/2;i++){
+        temp=str[i];
+        str[i]=str[n-i-1];
+        str[n-i-1]=temp;
+    }
+}
+int main(){
+    char str[50],stuff[50],destuff[50];
+    printf("enter the string\n");
+    scanf("%s",&str);
+    int n=strlen(str);
+    int j=0,i;
+    for(i=n-1;i>=0;i--){
+        stuff[j++]=str[i];
+        if(str[i]=='e'||str[i]=='f'){
+            stuff[j++]='e';
+        }
+    }
+    j=0;
+    for(i=0;i<=strlen(stuff);i++){
+        destuff[j++]=stuff[i];
+        if(stuff[i]=='e'||stuff[i]=='f'){
+            i++;
+        }
+    }
+    rev(stuff);
+	rev(destuff);
+	printf("%s\n",stuff);
+	printf("%s\n",destuff);
+	printf("%s",str);
+}
+//////////go back n///////
+#include<stdio.h>
+int main()
+{
+    int ws;
+    int ack,sent=0,i;
+    printf("enter window size");
+    scanf("%d",&ws);
+    while(1)
+    {
+        for(i=0;i<ws;i++){
+            printf("frame %d has been transmitted \n",sent);
+            sent++;
+            if(sent==ws)
+            break;
+        }
+    
+    printf("pls enter the last ack received");
+    scanf("%d",&ack);
+    if(ack==ws)
+     break;
+    else
+     sent=ack;
+    }
+    return 0;
+     
+}
+///////////crc//////////
+#include<stdio.h>
+#include<string.h>
+char msg[100],gf[100],check[100];
+int n,N;
+void xor()
+{
+	int j;
+	for(j=1;j<N;j++)
+	{
+		check[j]=((check[j]==gf[j])?'0':'1');
+	}
+}
+void receiver(int N)
+{
+	printf("data received  : %s",msg);
+	crc();
+	int i;
+	for(i=0;i<N-1 && check[i]=='0';i++);
+	if(i==N-1)
+	printf("\nno error");
+	else
+	printf("error");
+}
+void crc()
+{
+	int i,j;
+	for(i=0;i<N;i++)
+	{
+		check[i]=msg[i];
+	}
+	do
+	{
+		if(check[0]=='1')
+			xor();
+		for(j=0;j<N-1;j++)
+		
+			check[j]=check[j+1];
+		
+		check[j]=msg[i++];
+	}while(i<=n+N-1);
+}
+
+int main()
+{
+	int i;
+	printf("enter msg : ");
+	scanf("%s",&msg);
+	printf("enter gf : ");
+	scanf("%s",&gf);
+	n=strlen(msg);
+	N=strlen(gf);
+	for(i=n;i<n+N-1;i++)
+	{
+		msg[i]='0';  //N-1 zeroes
+	}
+	printf("message with N-1 zero : %s",msg);
+	crc();
+	printf("check value : %s",check);
+	for(i=n;i<n+N-1;i++)
+	{
+		msg[i]=check[i-n];
+	}
+	printf("final mesg : %s",msg);
+	receiver(N);
+	return 0;
+}
